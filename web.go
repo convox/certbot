@@ -47,6 +47,8 @@ func listen() error {
 }
 
 func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
+	fmt.Println("???")
+
 	body := c.Form("stripped-text")
 
 	d, err := domain(body)
@@ -58,8 +60,6 @@ func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 	c.Tag("domain=%q", d)
 
 	e, err := exists(d)
-	fmt.Printf("e = %+v\n", e)
-	fmt.Printf("err = %+v\n", err)
 	if err != nil {
 		return err
 	}
@@ -92,22 +92,59 @@ func domain(body string) (string, error) {
 }
 
 func exists(domain string) (bool, error) {
-	wildcard := fmt.Sprintf("*.%s", strings.TrimSuffix(domain, ".rack.convox.io"))
+	wildcard := fmt.Sprintf("\\052.%s.", domain)
 	fmt.Printf("wildcard = %+v\n", wildcard)
 
 	res, err := r53.ListResourceRecordSets(&route53.ListResourceRecordSetsInput{
 		HostedZoneId:    aws.String(os.Getenv("HOSTED_ZONE")),
-		MaxItems:        aws.String("1"),
+		MaxItems:        aws.String("100"),
 		StartRecordName: aws.String(wildcard),
+		StartRecordType: aws.String("CNAME"),
 	})
 	if err != nil {
 		return false, err
 	}
+	if len(res.ResourceRecordSets) < 1 {
+		return false, nil
+	}
 
-	return len(res.ResourceRecordSets) > 0, nil
+	rr := res.ResourceRecordSets[0]
+
+	if *rr.Type == "CNAME" && *rr.Name == wildcard {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func register(domain string) error {
+	wildcard := fmt.Sprintf("\\052.%s.", domain)
+	target := fmt.Sprintf("%s.elb.amazonaws.com", strings.TrimSuffix(domain, ".rack.convox.io"))
+	fmt.Printf("wildcard = %+v\n", wildcard)
+	fmt.Printf("target = %+v\n", target)
+
+	_, err := r53.ChangeResourceRecordSets(&route53.ChangeResourceRecordSetsInput{
+		HostedZoneId: aws.String(os.Getenv("HOSTED_ZONE")),
+		ChangeBatch: &route53.ChangeBatch{
+			Changes: []*route53.Change{
+				&route53.Change{
+					Action: aws.String("CREATE"),
+					ResourceRecordSet: &route53.ResourceRecordSet{
+						Name: aws.String(wildcard),
+						Type: aws.String("CNAME"),
+						TTL:  aws.Int64(86400),
+						ResourceRecords: []*route53.ResourceRecord{
+							&route53.ResourceRecord{Value: aws.String(target)},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
