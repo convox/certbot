@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd $(dirname ${0:-})/..
+
+if [ "$DEVELOPMENT" == "true" ]; then
+  exec $GOPATH/bin/rerun -build github.com/convox/certbot
+else
+  exec $GOPATH/bin/certbot
+fi

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+aws acm request-certificate --domain-name ${1}.rack.convox.io \
+  --domain-validation-options DomainName=${1}.rack.convox.io,ValidationDomain=rack.convox.io

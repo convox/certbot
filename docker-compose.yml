@@ -1,0 +1,9 @@
+version: 2
+services:
+  web:
+    build: .
+    environment:
+      - AWS_REGION
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - HOSTED_ZONE

@@ -1,0 +1,7 @@
+balancers:
+  web:
+    80/http/301: https://:443/*
+    443/https: http://web:3000
+services:
+  web:
+    build: .
