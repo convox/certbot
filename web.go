@@ -47,8 +47,6 @@ func listen() error {
 }
 
 func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
-	fmt.Println("???")
-
 	body := c.Form("stripped-text")
 
 	d, err := domain(body)
@@ -93,7 +91,6 @@ func domain(body string) (string, error) {
 
 func exists(domain string) (bool, error) {
 	wildcard := fmt.Sprintf("\\052.%s.", domain)
-	fmt.Printf("wildcard = %+v\n", wildcard)
 
 	res, err := r53.ListResourceRecordSets(&route53.ListResourceRecordSetsInput{
 		HostedZoneId:    aws.String(os.Getenv("HOSTED_ZONE")),
@@ -120,8 +117,6 @@ func exists(domain string) (bool, error) {
 func register(domain string) error {
 	wildcard := fmt.Sprintf("\\052.%s.", domain)
 	target := fmt.Sprintf("%s.elb.amazonaws.com", strings.TrimSuffix(domain, ".rack.convox.io"))
-	fmt.Printf("wildcard = %+v\n", wildcard)
-	fmt.Printf("target = %+v\n", target)
 
 	_, err := r53.ChangeResourceRecordSets(&route53.ChangeResourceRecordSetsInput{
 		HostedZoneId: aws.String(os.Getenv("HOSTED_ZONE")),
