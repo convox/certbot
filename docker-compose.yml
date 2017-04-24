@@ -7,3 +7,9 @@ services:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - HOSTED_ZONE
+    labels:
+      - convox.port.80.protocol=http
+      - convox.port.443.protocol=https
+    ports:
+      - 80:3000
+      - 443:3000
