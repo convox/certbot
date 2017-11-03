@@ -1,6 +1,6 @@
 services:
   web:
-    certificate: ${HOST}
+    domain: ${HOST}
     environment:
       - AWS_REGION
       - AWS_ACCESS_KEY_ID
