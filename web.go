@@ -17,7 +17,7 @@ import (
 
 var (
 	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.certificates.amazon.com/approvals[^\s]+`)
-	reDomain      = regexp.MustCompile(`Domain: (.+?\.rack\.convox\.io)`)
+	reDomain      = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
 
 	r53 *route53.Route53
 )
@@ -47,7 +47,8 @@ func listen() error {
 }
 
 func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
-	body := c.Form("stripped-text")
+	body := c.Form("body-plain")
+	fmt.Printf("body = %+v\n", body)
 
 	d, err := domain(body)
 	if err != nil {
@@ -116,7 +117,7 @@ func exists(domain string) (bool, error) {
 
 func register(domain string) error {
 	wildcard := fmt.Sprintf("\\052.%s.", domain)
-	target := fmt.Sprintf("%s.elb.amazonaws.com", strings.TrimSuffix(domain, ".rack.convox.io"))
+	target := fmt.Sprintf("%s.elb.amazonaws.com", strings.TrimSuffix(domain, ".convox.site"))
 
 	_, err := r53.ChangeResourceRecordSets(&route53.ChangeResourceRecordSetsInput{
 		HostedZoneId: aws.String(os.Getenv("HOSTED_ZONE")),
