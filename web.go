@@ -87,6 +87,8 @@ func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 		return err
 	}
 
+	c.Logf("approve=new")
+
 	return c.RenderOK()
 }
 
