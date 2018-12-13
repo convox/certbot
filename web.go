@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.certificates.amazon.com/approvals[^\s]+`)
-	reDomain      = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
+	reApprovalURL    = regexp.MustCompile(`https://[^\.]+\.certificates.amazon.com/approvals[^\s]+`)
+	reDomain         = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
+	reInternalDomain = regexp.MustCompile(`internal-.+?\-rti-.\d+\.[^\.]+\.convox\.site`)
 
 	r53 *route53.Route53
 )
@@ -48,7 +49,7 @@ func listen() error {
 
 func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 	body := c.Form("body-plain")
-	fmt.Printf("body = %+v\n", body)
+	// fmt.Printf("body = %+v\n", body)
 
 	d, err := domain(body)
 	if err != nil {
@@ -64,6 +65,15 @@ func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 	}
 
 	if e {
+		if reInternalDomain.MatchString(d) {
+			c.Logf("approve=internal")
+
+			if err := approve(reApprovalURL.FindString(body)); err != nil {
+				c.LogError(err)
+				return err
+			}
+		}
+
 		return deny(d)
 	}
 
