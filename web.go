@@ -16,9 +16,8 @@ import (
 )
 
 var (
-	reApprovalURL    = regexp.MustCompile(`https://[^\.]+\.certificates.amazon.com/approvals[^\s]+`)
-	reDomain         = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
-	reInternalDomain = regexp.MustCompile(`internal-.+?\-rti-.\d+\.[^\.]+\.convox\.site`)
+	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.certificates.amazon.com/approvals[^\s]+`)
+	reDomain      = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
 
 	r53 *route53.Route53
 )
@@ -65,13 +64,15 @@ func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 	}
 
 	if e {
-		if reInternalDomain.MatchString(d) {
-			c.Logf("approve=internal")
+		if strings.Contains(body, "requires your approval to renew") {
+			c.Logf("approve=renew")
 
 			if err := approve(reApprovalURL.FindString(body)); err != nil {
 				c.LogError(err)
 				return err
 			}
+
+			return nil
 		}
 
 		return deny(d)
