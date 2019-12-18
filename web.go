@@ -159,7 +159,7 @@ func register(domain string) error {
 
 func approve(aurl string) error {
 	if _, err := url.Parse(aurl); aurl == "" || err != nil {
-		return fmt.Errorf("invalid url: %s", url)
+		return fmt.Errorf("invalid url: %s", aurl)
 	}
 
 	b := surf.NewBrowser()
