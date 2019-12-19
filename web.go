@@ -48,7 +48,7 @@ func listen() error {
 
 func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 	body := c.Form("body-plain")
-	// fmt.Printf("body = %+v\n", body)
+	fmt.Printf("body = %+v\n", body)
 
 	d, err := domain(body)
 	if err != nil {
