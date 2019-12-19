@@ -168,7 +168,7 @@ func approve(aurl string) error {
 		return err
 	}
 
-	f, err := b.Form(`form[action="/approvals"]`)
+	f, err := b.Form(`form[action*="approv"]`)
 	if err != nil {
 		return err
 	}
