@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.certificates.amazon.com/approvals[^\s]+`)
+	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.(?:acm-)?certificates\.amazon\.com/approvals[^\s]+`)
 	reDomain      = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
 
 	r53 *route53.Route53
