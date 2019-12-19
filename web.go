@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	reApprovalURL = regexp.MustCompile(`https://[^\.]+\..*-?certificates\.amazon\.com/approvals[^\s]+`)
+	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.(?:acm-)?certificates\.amazon\.com/approvals[^\s]+`)
 	reDomain      = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
 
 	r53 *route53.Route53
@@ -48,7 +48,7 @@ func listen() error {
 
 func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 	body := c.Form("body-plain")
-	// fmt.Printf("body = %+v\n", body)
+	fmt.Printf("body = %+v\n", body)
 
 	d, err := domain(body)
 	if err != nil {
