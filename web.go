@@ -64,7 +64,7 @@ func mail(w http.ResponseWriter, r *http.Request, c *api.Context) error {
 	}
 
 	if e {
-		if strings.Contains(body, "requires your approval to renew") {
+		if strings.Contains(body, "requires your approval to renew") || strings.Contains(body, "To approve this request") {
 			c.Logf("approve=renew")
 
 			if err := approve(reApprovalURL.FindString(body)); err != nil {
