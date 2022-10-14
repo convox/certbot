@@ -125,6 +125,34 @@ func exists(domain string) (bool, error) {
 		return true, nil
 	}
 
+	// check for parent wildcard domain
+	parts := strings.Split(domain, ".")
+	if len(parts) <= 2 {
+		return false, nil
+	}
+
+	parentDomain := strings.Join(parts[1:], ".")
+	wildcard = fmt.Sprintf("\\052.%s.", parentDomain)
+
+	res, err = r53.ListResourceRecordSets(&route53.ListResourceRecordSetsInput{
+		HostedZoneId:    aws.String(os.Getenv("HOSTED_ZONE")),
+		MaxItems:        aws.String("100"),
+		StartRecordName: aws.String(wildcard),
+		StartRecordType: aws.String("CNAME"),
+	})
+	if err != nil {
+		return false, err
+	}
+	if len(res.ResourceRecordSets) < 1 {
+		return false, nil
+	}
+
+	rr = res.ResourceRecordSets[0]
+
+	if *rr.Type == "CNAME" && *rr.Name == wildcard {
+		return true, nil
+	}
+
 	return false, nil
 }
 
