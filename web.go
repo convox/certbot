@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/route53"
+	"github.com/aws/aws-sdk-go/service/route53/route53iface"
 	"github.com/convox/api"
 	"github.com/headzoo/surf"
 )
@@ -19,7 +20,7 @@ var (
 	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.(?:acm-)?certificates\.amazon\.com/approvals[^\s]+`)
 	reDomain      = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
 
-	r53 *route53.Route53
+	r53 route53iface.Route53API
 )
 
 func init() {
