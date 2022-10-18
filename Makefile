@@ -21,6 +21,4 @@ test: check
 	go test ./...
 
 vendor:
-	go get -u github.com/kardianos/govendor
-	govendor fetch +outside
-	govendor remove +unused
+	go mod vendor
