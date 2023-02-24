@@ -21,6 +21,6 @@ require (
 	github.com/jmespath/go-jmespath v0.0.0-20160803190731-bd40a432e4c7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/smartystreets/goconvey v1.7.2 // indirect
-	golang.org/x/net v0.0.0-20190311183353-d8887717615a // indirect
+	golang.org/x/net v0.7.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
