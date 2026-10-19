@@ -10,6 +10,8 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbiface"
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/aws/aws-sdk-go/service/route53/route53iface"
 	"github.com/convox/api"
@@ -20,11 +22,15 @@ var (
 	reApprovalURL = regexp.MustCompile(`https://[^\.]+\.(?:acm-)?certificates\.amazon\.com/approvals[^\s]+`)
 	reDomain      = regexp.MustCompile(`Domain: (.+?\.convox\.site)`)
 
+	ddb dynamodbiface.DynamoDBAPI
 	r53 route53iface.Route53API
 )
 
 func init() {
-	r53 = route53.New(session.Must(session.NewSession()))
+	s := session.Must(session.NewSession())
+
+	ddb = dynamodb.New(s, aws.NewConfig().WithMaxRetries(2))
+	r53 = route53.New(s)
 }
 
 func main() {
@@ -43,6 +49,7 @@ func listen() error {
 	})
 
 	server.Route("mail", "POST", "/mail", mail)
+	server.Route("validation", "POST", "/validation", validation)
 
 	return server.Listen("http", ":3000")
 }
