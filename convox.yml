@@ -6,4 +6,5 @@ services:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - HOSTED_ZONE
+      - VALIDATION_TABLE
     port: 3000
